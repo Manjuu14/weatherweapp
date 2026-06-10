@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Weather Mood Dashboard — real-time local time, weather moods, and smart city search. A premium offline weather experience." />
+  <meta name="keywords" content="weather, mood, dashboard, city, offline, local time" />
+  <meta name="author" content="Weather Mood Dashboard" />
+  <title>WeatherMood — Premium Weather Dashboard</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!--  BACKGROUND LAYER — weather gradient + particles   -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div id="bg-layer" class="bg-layer">
+    <div class="bg-gradient" id="bg-gradient"></div>
+    <div class="particles" id="particles"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!--  MAIN APP WRAPPER                                   -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="app-wrapper" id="app-wrapper">
+
+    <!-- ─── HEADER ─────────────────────────────────────── -->
+    <header class="header" role="banner">
+      <div class="header-inner">
+        <div class="logo" aria-label="WeatherMood Home">
+          <span class="logo-icon" aria-hidden="true">🌤</span>
+          <span class="logo-text">WeatherMood</span>
+          <span class="logo-badge">LIVE</span>
+        </div>
+
+        <nav class="header-actions" role="navigation" aria-label="App controls">
+          <button
+            id="theme-toggle"
+            class="theme-btn"
+            aria-label="Toggle dark/light mode"
+            title="Toggle theme"
+          >
+            <span class="theme-icon" id="theme-icon" aria-hidden="true">🌙</span>
+            <span class="theme-label" id="theme-label">Dark</span>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ─── HERO SEARCH ──────────────────────────────────── -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <h1 id="hero-heading" class="hero-title">
+        How's the weather in your <span class="gradient-text">world</span>?
+      </h1>
+      <p class="hero-subtitle">
+        Search any city — real local time, weather mood, and live stats. Completely offline.
+      </p>
+
+      <div class="search-container" role="search">
+        <div class="search-box" id="search-box">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input
+            type="text"
+            id="city-input"
+            class="search-input"
+            placeholder="Search city… try &quot;blr&quot;, &quot;nyc&quot;, &quot;mumabi&quot;"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Search for a city"
+            aria-autocomplete="list"
+            aria-controls="suggestions-list"
+          />
+          <button
+            id="search-btn"
+            class="search-submit"
+            aria-label="Search weather for entered city"
+          >
+            <span>Search</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <!-- Autocomplete suggestions -->
+        <ul
+          id="suggestions-list"
+          class="suggestions"
+          role="listbox"
+          aria-label="City suggestions"
+          hidden
+        ></ul>
+
+        <!-- Fuzzy-match note -->
+        <div id="fuzzy-notice" class="fuzzy-notice" hidden role="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- ─── MAIN DASHBOARD ──────────────────────────────── -->
+    <main id="dashboard" class="dashboard hidden" role="main" aria-label="Weather dashboard">
+
+      <!-- Primary weather card -->
+      <section class="weather-card glass-card" id="weather-card" aria-label="Current weather">
+        <div class="weather-top">
+          <div class="weather-icon-wrap">
+            <span class="weather-emoji" id="weather-emoji" aria-hidden="true">☀️</span>
+          </div>
+          <div class="weather-city-info">
+            <h2 class="city-name" id="city-name">City Name</h2>
+            <span class="country-name" id="country-name">Country</span>
+            <span class="condition-badge" id="condition-badge">Sunny</span>
+          </div>
+        </div>
+        <p class="mood-message" id="mood-message">"Perfect day to chase your goals."</p>
+      </section>
+
+      <!-- Time card -->
+      <section class="time-card glass-card" id="time-card" aria-label="Local time for city">
+        <div class="time-header">
+          <span class="card-label">LOCAL TIME</span>
+          <span class="timezone-badge" id="timezone-badge">UTC+0</span>
+        </div>
+        <div class="time-display" id="time-display" aria-live="polite" aria-atomic="true">00:00:00</div>
+        <div class="date-display" id="date-display">Wednesday, June 10, 2026</div>
+        <div class="timezone-name" id="timezone-name">🌍 Asia/Kolkata</div>
+      </section>
+
+      <!-- Stats cards grid -->
+      <section class="stats-grid" aria-label="Weather statistics">
+
+        <article class="stat-card glass-card" id="stat-temp" aria-label="Temperature">
+          <div class="stat-icon" aria-hidden="true">🌡️</div>
+          <div class="stat-info">
+            <span class="stat-label">Temperature</span>
+            <span class="stat-value" id="stat-temp-val">--°C</span>
+          </div>
+          <div class="stat-bar"><div class="stat-bar-fill" id="temp-bar"></div></div>
+        </article>
+
+        <article class="stat-card glass-card" id="stat-feels" aria-label="Feels like temperature">
+          <div class="stat-icon" aria-hidden="true">🤔</div>
+          <div class="stat-info">
+            <span class="stat-label">Feels Like</span>
+            <span class="stat-value" id="stat-feels-val">--°C</span>
+          </div>
+          <div class="stat-bar"><div class="stat-bar-fill feels" id="feels-bar"></div></div>
+        </article>
+
+        <article class="stat-card glass-card" id="stat-humidity" aria-label="Humidity percentage">
+          <div class="stat-icon" aria-hidden="true">💧</div>
+          <div class="stat-info">
+            <span class="stat-label">Humidity</span>
+            <span class="stat-value" id="stat-humidity-val">--%</span>
+          </div>
+          <div class="stat-bar"><div class="stat-bar-fill humidity" id="humidity-bar"></div></div>
+        </article>
+
+        <article class="stat-card glass-card" id="stat-wind" aria-label="Wind speed">
+          <div class="stat-icon" aria-hidden="true">💨</div>
+          <div class="stat-info">
+            <span class="stat-label">Wind Speed</span>
+            <span class="stat-value" id="stat-wind-val">-- km/h</span>
+          </div>
+          <div class="stat-bar"><div class="stat-bar-fill wind" id="wind-bar"></div></div>
+        </article>
+
+      </section>
+    </main>
+
+    <!-- ─── LOADING STATE ────────────────────────────────── -->
+    <div id="loading-state" class="loading-state hidden" aria-live="polite" aria-busy="true">
+      <div class="loader-ring"></div>
+      <span class="loader-text">Finding your city…</span>
+    </div>
+
+    <!-- ─── BOTTOM BAR ───────────────────────────────────── -->
+    <footer class="bottom-bar" role="contentinfo">
+
+      <!-- Popular cities -->
+      <div class="bottom-section" id="popular-section">
+        <h3 class="section-label">
+          <span aria-hidden="true">🌍</span> Popular Cities
+        </h3>
+        <div class="chips-row" id="popular-chips" role="list" aria-label="Popular cities"></div>
+      </div>
+
+      <!-- Recent searches -->
+      <div class="bottom-section" id="recent-section" hidden>
+        <h3 class="section-label">
+          <span aria-hidden="true">🕒</span> Recent Searches
+        </h3>
+        <div class="chips-row" id="recent-chips" role="list" aria-label="Recent searches"></div>
+      </div>
+
+    </footer>
+
+  </div><!-- /app-wrapper -->
+
+  <script src="script.js"></script>
+</body>
+</html>
