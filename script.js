@@ -508,12 +508,6 @@ const POPULAR_CITIES = [
   'Seoul','Bangkok','Toronto','Cape Town','Rome','Madrid','Bali','Istanbul'
 ];
 
-/* ══════════════════════════════════════════════════════════════
-   2. WEATHER ENGINE
-   Deterministic — same city always produces coherent conditions
-   based on latitude, longitude, current month & hour.
-   ══════════════════════════════════════════════════════════════ */
-
 const WEATHER_CONDITIONS = {
   sunny:     { label:'Sunny',       emoji:'☀️',  gradient:'weather-sunny',  mood:['Perfect day to chase your goals.','Step outside — the sun is yours.','Bright skies, brighter possibilities.'] },
   partly:    { label:'Partly Cloudy',emoji:'⛅',  gradient:'weather-sunny',  mood:['A nice mix of sun and clouds.','Comfortable and pleasant outdoors.','Good vibes all around.'] },
@@ -542,7 +536,6 @@ function generateWeather(city) {
   const isWinter   = lat > 0 ? (month <= 1 || month >= 11) : (month >= 5 && month <= 8);
   const isSummer   = lat > 0 ? (month >= 5 && month <= 8) : (month <= 1 || month >= 11);
 
-  // Pick condition from seeded random
   const rand = seededRand(seed);
   let condition;
 
@@ -558,13 +551,11 @@ function generateWeather(city) {
     condition = pick(rand, ['sunny','partly','cloudy','rainy','windy','drizzle','foggy','sunny','partly']);
   }
 
-  // Fall-back for missing keys
   if (!WEATHER_CONDITIONS[condition]) condition = 'partly';
   if (isNight && condition === 'sunny') condition = 'clear';
 
   const w = WEATHER_CONDITIONS[condition];
 
-  // Temperature based on latitude, season, time of day
   let baseTemp = 27 - Math.abs(lat) * 0.55;
   if (isPolar) baseTemp -= 15;
   if (isTropical) baseTemp += 6;
@@ -594,18 +585,17 @@ function generateWeather(city) {
            temp, feelsLike, humidity, wind, mood: moodPick };
 }
 
-/* Utility: simple string hash */
 function hashStr(s) {
   let h = 5381;
   for (let i = 0; i < s.length; i++) h = (h * 33) ^ s.charCodeAt(i);
   return h >>> 0;
 }
-/* Utility: seeded pseudo-random [0,1) */
+
 function seededRand(seed) {
   const x = Math.sin(seed + 1) * 10000;
   return x - Math.floor(x);
 }
-/* Utility: pick from array using rand value */
+
 function pick(r, arr) { return arr[Math.floor(r * arr.length)]; }
 
 
@@ -622,12 +612,6 @@ function levenshtein(a, b) {
   return dp[m][n];
 }
 
-/**
- * Search cities with fuzzy matching.
- * Returns sorted array of { city, score, matchType }.
- * @param {string} query
- * @param {number} [limit=6]
- */
 function searchCities(query, limit = 6) {
   const q = query.trim().toLowerCase();
   if (!q) return [];
@@ -641,19 +625,19 @@ function searchCities(query, limit = 6) {
     let matchType   = 'fuzzy';
 
     for (const term of allTerms) {
-      // Exact match
+      
       if (term === q) { bestScore = 0; matchType = 'exact'; break; }
-      // Prefix match
+     
       if (term.startsWith(q) || q.startsWith(term)) {
         const s = Math.abs(term.length - q.length) * 0.5;
         if (s < bestScore) { bestScore = s; matchType = 'prefix'; }
       }
-      // Contains
+    
       if (term.includes(q)) {
         const s = term.length - q.length + 2;
         if (s < bestScore) { bestScore = s; matchType = 'contains'; }
       }
-      // Fuzzy (Levenshtein)
+    
       if (q.length >= 3) {
         const dist = levenshtein(q, term.slice(0, Math.min(term.length, q.length + 3)));
         if (dist < bestScore) { bestScore = dist; matchType = 'fuzzy'; }
@@ -665,15 +649,10 @@ function searchCities(query, limit = 6) {
     }
   }
 
-  // Sort: exact → prefix → contains → fuzzy, then alphabetically
   results.sort((a, b) => a.score - b.score || a.city.name.localeCompare(b.city.name));
   return results.slice(0, limit);
 }
 
-/**
- * Find the single best city for a query (for direct search).
- * Returns { city, fuzzy } where fuzzy=true means it was a typo match.
- */
 function findBestCity(query) {
   const results = searchCities(query, 1);
   if (!results.length) return null;
@@ -681,15 +660,8 @@ function findBestCity(query) {
   return { city, fuzzy: matchType === 'fuzzy' && score > 0 };
 }
 
-/* ══════════════════════════════════════════════════════════════
-   4. CLOCK ENGINE
-   ══════════════════════════════════════════════════════════════ */
 let clockInterval = null;
 
-/**
- * Start the live local-time clock for a city.
- * Clears any previous interval.
- */
 function startClock(city) {
   stopClock();
   updateClock(city);
@@ -705,20 +677,17 @@ function updateClock(city) {
   const tz  = city.timezone;
   const now  = new Date();
 
-  // Time: HH:MM:SS in city timezone
   const timeStr = new Intl.DateTimeFormat('en-US', {
     timeZone: tz,
     hour: '2-digit', minute: '2-digit', second: '2-digit',
     hour12: true
   }).format(now);
 
-  // Date: e.g. Wednesday, June 10, 2026
   const dateStr = new Intl.DateTimeFormat('en-US', {
     timeZone: tz,
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   }).format(now);
 
-  // UTC offset
   const offsetStr = getUtcOffset(tz, now);
 
   DOM.timeDisplay.textContent = timeStr;
@@ -739,11 +708,6 @@ function getUtcOffset(tz, date) {
   }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   5. UI CONTROLLER
-   ══════════════════════════════════════════════════════════════ */
-
-/** Cached DOM references */
 const DOM = {
   appWrapper:     document.getElementById('app-wrapper'),
   bgGradient:     document.getElementById('bg-gradient'),
@@ -757,7 +721,6 @@ const DOM = {
   themeToggle:    document.getElementById('theme-toggle'),
   themeIcon:      document.getElementById('theme-icon'),
   themeLabel:     document.getElementById('theme-label'),
-  // Weather card
   weatherEmoji:   document.getElementById('weather-emoji'),
   cityName:       document.getElementById('city-name'),
   countryName:    document.getElementById('country-name'),
@@ -777,7 +740,6 @@ const DOM = {
   feelsBar:       document.getElementById('feels-bar'),
   humidityBar:    document.getElementById('humidity-bar'),
   windBar:        document.getElementById('wind-bar'),
-  // Bottom
   popularChips:   document.getElementById('popular-chips'),
   recentChips:    document.getElementById('recent-chips'),
   recentSection:  document.getElementById('recent-section'),
@@ -786,7 +748,7 @@ const DOM = {
 
 
 function showWeather(city, isFuzzy = false, originalQuery = '') {
-  // Show loading briefly for realism
+
   DOM.dashboard.classList.add('hidden');
   DOM.loadingState.classList.remove('hidden');
 
@@ -795,7 +757,6 @@ function showWeather(city, isFuzzy = false, originalQuery = '') {
 
     const weather = generateWeather(city);
 
-    // Update fuzzy notice
     if (isFuzzy && originalQuery) {
       DOM.fuzzyNotice.innerHTML =
         `Showing results for <span class="fuzzy-highlight">${city.name}</span>`;
@@ -811,16 +772,13 @@ function showWeather(city, isFuzzy = false, originalQuery = '') {
     DOM.conditionBadge.textContent = weather.label;
     DOM.moodMessage.textContent    = `"${weather.mood}"`;
 
-    // Update background gradient
     DOM.bgGradient.className = `bg-gradient ${weather.gradient}`;
 
-    // Update stats
     DOM.statTempVal.textContent    = `${weather.temp}°C`;
     DOM.statFeelsVal.textContent   = `${weather.feelsLike}°C`;
     DOM.statHumidityVal.textContent= `${weather.humidity}%`;
     DOM.statWindVal.textContent    = `${weather.wind} km/h`;
 
-    // Animate bars (clamp to 0-100%)
     const tempPct    = Math.min(100, Math.max(0, ((weather.temp + 20) / 70) * 100));
     const feelsPct   = Math.min(100, Math.max(0, ((weather.feelsLike + 20) / 70) * 100));
     const humidityPct= weather.humidity;
@@ -833,24 +791,19 @@ function showWeather(city, isFuzzy = false, originalQuery = '') {
       DOM.windBar.style.width     = `${windPct}%`;
     });
 
-    // Start live clock
     startClock(city);
 
-    // Show dashboard with animation
     DOM.dashboard.classList.remove('hidden');
     DOM.dashboard.style.animation = 'none';
     requestAnimationFrame(() => {
       DOM.dashboard.style.animation = '';
     });
 
-    // Save to history
     History.add(city.name);
     renderRecentChips();
 
-    // Update search input
     DOM.cityInput.value = city.name;
 
-    // Close suggestions
     hideSuggestions();
 
   }, 600);
@@ -1006,7 +959,6 @@ function handleSearch() {
   showWeather(result.city, result.fuzzy, query);
 }
 
-/** Debounce helper */
 function debounce(fn, ms) {
   let t;
   return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
@@ -1019,52 +971,41 @@ const debouncedSuggest = debounce(query => {
 }, 180);
 
 function init() {
-  // Particles
+
   createParticles();
 
-  // Theme
   Theme.init();
 
-  // Popular chips
   renderPopularChips();
 
-  // Recent chips
   renderRecentChips();
 
-  // ── Event Listeners ─────────────────────────────────
-
-  // Theme toggle
   DOM.themeToggle.addEventListener('click', () => Theme.toggle());
 
-  // Search button
   DOM.searchBtn.addEventListener('click', () => handleSearch());
 
-  // Enter key
   DOM.cityInput.addEventListener('keydown', e => {
     if (e.key === 'Enter') {
       e.preventDefault();
       handleSearch();
     }
-    // Arrow key navigation in suggestions
+
     if (e.key === 'ArrowDown') {
       const first = DOM.suggestionsList.querySelector('.suggestion-item');
       if (first) first.focus();
     }
   });
 
-  // Live suggestions on input
   DOM.cityInput.addEventListener('input', e => {
     const q = e.target.value.trim();
     DOM.fuzzyNotice.hidden = true;
     debouncedSuggest(q);
   });
 
-  // Close suggestions when clicking outside
   document.addEventListener('click', e => {
     if (!e.target.closest('.search-container')) hideSuggestions();
   });
 
-  // Keyboard nav within suggestions
   DOM.suggestionsList.addEventListener('keydown', e => {
     const items = [...DOM.suggestionsList.querySelectorAll('.suggestion-item')];
     const idx   = items.indexOf(document.activeElement);
@@ -1076,7 +1017,6 @@ function init() {
     if (e.key === 'Escape') { hideSuggestions(); DOM.cityInput.focus(); }
   });
 
-  // ── Auto-load a random popular city on start ────────
   const randomPopular = CITIES.find(c => c.name === 'Bengaluru') ||
                         CITIES[Math.floor(Math.random() * CITIES.length)];
   if (randomPopular) {
@@ -1084,7 +1024,6 @@ function init() {
   }
 }
 
-// Kick off when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
