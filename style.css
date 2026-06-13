@@ -1,12 +1,5 @@
-/* ══════════════════════════════════════════════════════════════
-   WeatherMood — Premium Dashboard Stylesheet
-   Style: Glassmorphism · Dark/Light modes · Smooth animations
-   Font: Inter (Google Fonts)
-   ══════════════════════════════════════════════════════════════ */
-
-/* ── 1. CSS CUSTOM PROPERTIES (DESIGN TOKENS) ──────────────── */
 :root {
-  /* Spacing scale */
+  
   --sp-xs:  4px;
   --sp-sm:  8px;
   --sp-md: 16px;
@@ -14,14 +7,12 @@
   --sp-xl: 32px;
   --sp-2xl:48px;
 
-  /* Border radius */
   --r-sm:  8px;
   --r-md: 14px;
   --r-lg: 20px;
   --r-xl: 28px;
   --r-full: 9999px;
 
-  /* Typography */
   --font: 'Inter', system-ui, -apple-system, sans-serif;
   --fw-light:  300;
   --fw-normal: 400;
@@ -30,7 +21,6 @@
   --fw-bold:   700;
   --fw-black:  900;
 
-  /* Transitions */
   --ease-smooth: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
   --dur-fast:  150ms;
@@ -38,7 +28,6 @@
   --dur-slow:  600ms;
 }
 
-/* ── DARK THEME TOKENS ────────────────────────────────────── */
 [data-theme="dark"] {
   --bg-base:        #080c14;
   --surface-1:      rgba(255,255,255,0.05);
@@ -63,7 +52,6 @@
   --scrollbar:      rgba(255,255,255,0.12);
 }
 
-/* ── LIGHT THEME TOKENS ───────────────────────────────────── */
 [data-theme="light"] {
   --bg-base:        #f0f4ff;
   --surface-1:      rgba(255,255,255,0.70);
@@ -88,7 +76,6 @@
   --scrollbar:      rgba(0,0,0,0.12);
 }
 
-/* ── 2. RESET & BASE ─────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -113,12 +100,10 @@ body {
               background var(--dur-med) var(--ease-out);
 }
 
-/* Scrollbar styling */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: var(--r-full); }
 
-/* ── 3. BACKGROUND LAYER ─────────────────────────────────── */
 .bg-layer {
   position: fixed;
   inset: 0;
@@ -136,7 +121,6 @@ body {
   transition: background var(--dur-slow) var(--ease-out);
 }
 
-/* ── Weather-specific gradients ── */
 .bg-gradient.weather-sunny {
   background:
     radial-gradient(ellipse 140% 80% at 50% -20%, rgba(251,191,36,0.22) 0%, transparent 65%),
@@ -178,7 +162,6 @@ body {
     radial-gradient(ellipse 80% 60% at 20% 80%,  rgba(59,130,246,0.12) 0%, transparent 60%);
 }
 
-/* Floating particles */
 .particles {
   position: absolute;
   inset: 0;
@@ -197,7 +180,6 @@ body {
   100% { transform: translateY(-10vh) scale(1.0); opacity: 0; }
 }
 
-/* ── 4. APP WRAPPER ──────────────────────────────────────── */
 .app-wrapper {
   position: relative;
   z-index: 1;
@@ -212,7 +194,6 @@ body {
   overflow: hidden;
 }
 
-/* ── 5. HEADER ──────────────────────────────────────────── */
 .header {
   flex-shrink: 0;
 }
@@ -224,7 +205,6 @@ body {
   padding: var(--sp-sm) 0;
 }
 
-/* Logo */
 .logo {
   display: flex;
   align-items: center;
@@ -265,7 +245,6 @@ body {
   50%       { opacity: 0.60; }
 }
 
-/* Theme toggle button */
 .theme-btn {
   display: flex;
   align-items: center;
@@ -294,7 +273,6 @@ body {
 
 .theme-icon { font-size: 1rem; }
 
-/* ── 6. HERO / SEARCH SECTION ─────────────────────────── */
 .hero {
   flex-shrink: 0;
   text-align: center;
@@ -324,7 +302,6 @@ body {
   margin-bottom: var(--sp-lg);
 }
 
-/* Search box */
 .search-container {
   position: relative;
   max-width: 640px;
@@ -398,7 +375,6 @@ body {
 .btn-arrow { transition: transform var(--dur-fast); }
 .search-submit:hover .btn-arrow { transform: translateX(3px); }
 
-/* Autocomplete suggestions */
 .suggestions {
   position: absolute;
   top: calc(100% + 8px);
@@ -440,7 +416,6 @@ body {
 .suggestion-city { font-weight: var(--fw-semi); }
 .suggestion-country { color: var(--text-muted); font-size: 0.78rem; }
 
-/* Fuzzy notice */
 .fuzzy-notice {
   margin-top: var(--sp-sm);
   font-size: 0.80rem;
@@ -452,12 +427,11 @@ body {
 .fuzzy-notice[hidden] { display: none; }
 .fuzzy-highlight { color: var(--accent); font-weight: var(--fw-semi); }
 
-/* ── 7. MAIN DASHBOARD ───────────────────────────────────── */
 .dashboard {
   flex-shrink: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  /* fixed row heights: top row = weather+time cards, bottom = stat cards */
+
   grid-template-rows: 185px 130px;
   gap: var(--sp-md);
   animation: fade-in-up var(--dur-slow) var(--ease-out);
@@ -473,7 +447,6 @@ body {
   to   { opacity: 1; }
 }
 
-/* ── Glass card base ── */
 .glass-card {
   background: var(--surface-1);
   border: 1px solid var(--border);
@@ -493,7 +466,6 @@ body {
   border-color: var(--border-strong);
 }
 
-/* ── Weather card (spans full width on first row) ── */
 .weather-card {
   grid-column: 1 / 2;
   grid-row: 1 / 2;
@@ -564,7 +536,6 @@ body {
   margin-top: var(--sp-sm);
 }
 
-/* ── Time card ── */
 .time-card {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
@@ -615,14 +586,13 @@ body {
   margin-top: var(--sp-xs);
 }
 
-/* ── Stats grid ── */
 .stats-grid {
   grid-column: 1 / -1;
   grid-row: 2 / 3;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--sp-md);
-  /* prevent cards from stretching to fill extra space */
+  
   align-items: start;
 }
 
@@ -678,7 +648,6 @@ body {
 .stat-bar-fill.humidity { background: linear-gradient(90deg, #38bdf8, #818cf8); }
 .stat-bar-fill.wind   { background: linear-gradient(90deg, #a78bfa, #60a5fa); }
 
-/* ── 8. LOADING STATE ────────────────────────────────────── */
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -712,7 +681,6 @@ body {
   50%       { opacity: 0.45; }
 }
 
-/* ── 9. BOTTOM BAR ──────────────────────────────────────── */
 .bottom-bar {
   flex-shrink: 0;
   display: flex;
@@ -747,13 +715,11 @@ body {
   overflow-y: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  /* fade out the right edge to hint at scroll */
   -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
   mask-image: linear-gradient(to right, black 85%, transparent 100%);
 }
 .chips-row::-webkit-scrollbar { display: none; }
 
-/* City chip */
 .chip {
   display: inline-flex;
   align-items: center;
@@ -782,7 +748,6 @@ body {
 .chip:active { transform: translateY(0); }
 .chip-flag { font-size: 0.9rem; }
 
-/* ── 10. RESPONSIVE ─────────────────────────────────────── */
 @media (max-width: 900px) {
   .app-wrapper {
     padding: var(--sp-md);
@@ -827,7 +792,6 @@ body {
   .stat-value { font-size: 1rem; }
 }
 
-/* ── 11. UTILITY CLASSES ────────────────────────────────── */
 .hidden { display: none !important; }
 .sr-only {
   position: absolute;
