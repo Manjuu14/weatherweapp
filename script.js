@@ -1,23 +1,5 @@
-/**
- * WeatherMood — Premium Offline Weather Dashboard
- * ─────────────────────────────────────────────────
- * Architecture:
- *  1. City Dataset          – large offline city DB with timezone + coords
- *  2. Weather Engine        – deterministic realistic weather generator
- *  3. Fuzzy Search Engine   – typo/alias/abbreviation tolerant search
- *  4. Clock Engine          – live local time per city timezone
- *  5. UI Controller         – handles all DOM updates & animations
- *  6. Theme System          – dark / light mode with persistence
- *  7. History Manager       – recent-searches in localStorage
- *  8. Init & Event Binding  – app bootstrap
- */
-
 'use strict';
 
-/* ══════════════════════════════════════════════════════════════
-   1. CITY DATASET
-   Each city: { name, country, flag, timezone, lat, lon, aliases }
-   ══════════════════════════════════════════════════════════════ */
 const CITIES = [
   // ── INDIA — METRO CITIES ──────────────────────────────────
   { name:'Bengaluru',         country:'India', flag:'🇮🇳', timezone:'Asia/Kolkata', lat:12.97, lon:77.59,  aliases:['bangalore','bengalore','bnglore','bengluru','blr','bang','blore','silicon valley of india'] },
@@ -546,10 +528,7 @@ const WEATHER_CONDITIONS = {
   clear:     { label:'Clear Night', emoji:'🌙',  gradient:'weather-cloudy', mood:['Stars are shining just for you.','A peaceful, clear night.','The moon lights your path.'] },
 };
 
-/**
- * Generates realistic weather for a city using a deterministic seed.
- * Uses latitude, longitude, month, and a city-based hash for variety.
- */
+
 function generateWeather(city) {
   const now    = new Date();
   const month  = now.getMonth(); // 0=Jan..11=Dec
@@ -629,21 +608,7 @@ function seededRand(seed) {
 /* Utility: pick from array using rand value */
 function pick(r, arr) { return arr[Math.floor(r * arr.length)]; }
 
-/* ══════════════════════════════════════════════════════════════
-   3. FUZZY SEARCH ENGINE
-   Supports:
-   - Exact match
-   - Alias/abbreviation match
-   - Prefix match
-   - Levenshtein edit-distance (fuzzy)
-   ══════════════════════════════════════════════════════════════ */
 
-/**
- * Compute Levenshtein edit distance between two strings.
- * @param {string} a
- * @param {string} b
- * @returns {number}
- */
 function levenshtein(a, b) {
   const m = a.length, n = b.length;
   const dp = Array.from({ length: m + 1 }, (_, i) =>
@@ -819,9 +784,7 @@ const DOM = {
   popularSection: document.getElementById('popular-section'),
 };
 
-/**
- * Show the weather dashboard for a given city object.
- */
+
 function showWeather(city, isFuzzy = false, originalQuery = '') {
   // Show loading briefly for realism
   DOM.dashboard.classList.add('hidden');
@@ -893,9 +856,6 @@ function showWeather(city, isFuzzy = false, originalQuery = '') {
   }, 600);
 }
 
-/**
- * Render suggestions dropdown.
- */
 function renderSuggestions(results) {
   DOM.suggestionsList.innerHTML = '';
   if (!results.length) { hideSuggestions(); return; }
@@ -927,9 +887,7 @@ function hideSuggestions() {
   DOM.suggestionsList.innerHTML = '';
 }
 
-/**
- * Build popular city chips.
- */
+
 function renderPopularChips() {
   DOM.popularChips.innerHTML = '';
   POPULAR_CITIES.forEach(name => {
@@ -939,9 +897,7 @@ function renderPopularChips() {
   });
 }
 
-/**
- * Build recent searches chips.
- */
+
 function renderRecentChips() {
   const recent = History.get();
   if (!recent.length) { DOM.recentSection.hidden = true; return; }
@@ -954,9 +910,7 @@ function renderRecentChips() {
   });
 }
 
-/**
- * Create a city chip element.
- */
+
 function createChip(city) {
   const div = document.createElement('div');
   div.className = 'chip';
@@ -971,9 +925,7 @@ function createChip(city) {
   return div;
 }
 
-/**
- * Create floating particle elements.
- */
+
 function createParticles() {
   const colors = ['#818cf8','#a78bfa','#f472b6','#38bdf8','#34d399'];
   for (let i = 0; i < 18; i++) {
@@ -996,9 +948,6 @@ function createParticles() {
   }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   6. THEME SYSTEM
-   ══════════════════════════════════════════════════════════════ */
 const Theme = {
   key: 'wm-theme',
   current: 'dark',
@@ -1021,9 +970,7 @@ const Theme = {
   },
 };
 
-/* ══════════════════════════════════════════════════════════════
-   7. HISTORY MANAGER
-   ══════════════════════════════════════════════════════════════ */
+
 const History = {
   key: 'wm-history',
   max: 10,
@@ -1041,9 +988,6 @@ const History = {
   },
 };
 
-/* ══════════════════════════════════════════════════════════════
-   8. INIT & EVENT BINDING
-   ══════════════════════════════════════════════════════════════ */
 
 function handleSearch() {
   const query = DOM.cityInput.value.trim();
