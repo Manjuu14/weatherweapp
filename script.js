@@ -525,7 +525,7 @@ const WEATHER_CONDITIONS = {
 
 function generateWeather(city) {
   const now    = new Date();
-  const month  = now.getMonth(); // 0=Jan..11=Dec
+  const month  = now.getMonth(); 
   const hour   = now.getHours();
   const seed   = hashStr(city.name) + month * 31 + Math.floor(now.getDate() / 5);
 
@@ -765,7 +765,6 @@ function showWeather(city, isFuzzy = false, originalQuery = '') {
       DOM.fuzzyNotice.hidden = true;
     }
 
-    // Update weather card
     DOM.weatherEmoji.textContent   = weather.emoji;
     DOM.cityName.textContent       = city.name;
     DOM.countryName.textContent    = `${city.flag}  ${city.country}`;
@@ -948,7 +947,7 @@ function handleSearch() {
 
   const result = findBestCity(query);
   if (!result) {
-    // Show gentle not-found notice
+    
     DOM.fuzzyNotice.innerHTML =
       `No city found for <span class="fuzzy-highlight">${query}</span>. Try a different spelling.`;
     DOM.fuzzyNotice.hidden = false;
